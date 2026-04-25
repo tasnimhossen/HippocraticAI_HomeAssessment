@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Bedtime Story System — Block Diagram</title>
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; background: #1a1a2e; color: #eee; margin: 0; padding: 30px; }
+  h2   { text-align: center; color: #a8d8ea; letter-spacing: 1px; }
+  svg  { display: block; margin: 0 auto; }
+</style>
+</head>
+<body>
+<h2>Bedtime Story System — Block Diagram</h2>
+<svg viewBox="0 0 820 560" width="820" height="560" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- defs -->
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#7ec8e3"/>
+    </marker>
+    <filter id="glow">
+      <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#7ec8e3" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- ── USER ── -->
+  <rect x="330" y="20" width="160" height="50" rx="10" fill="#16213e" stroke="#7ec8e3" stroke-width="2" filter="url(#glow)"/>
+  <text x="410" y="51" text-anchor="middle" fill="#a8d8ea" font-size="15" font-weight="bold">USER</text>
+
+  <!-- arrow: user → categoriser -->
+  <line x1="410" y1="70" x2="410" y2="115" stroke="#7ec8e3" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="420" y="95" fill="#ccc" font-size="11">story request</text>
+
+  <!-- ── CATEGORISER ── -->
+  <rect x="285" y="115" width="250" height="55" rx="10" fill="#0f3460" stroke="#e94560" stroke-width="2"/>
+  <text x="410" y="139" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">CATEGORISER</text>
+  <text x="410" y="158" text-anchor="middle" fill="#ccc" font-size="11">(classifies: Adventure / Magic / …)</text>
+
+  <!-- arrow: categoriser → story generator -->
+  <line x1="410" y1="170" x2="410" y2="220" stroke="#7ec8e3" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="420" y="198" fill="#ccc" font-size="11">category + request</text>
+
+  <!-- ── STORY GENERATOR ── -->
+  <rect x="260" y="220" width="300" height="60" rx="10" fill="#0f3460" stroke="#e94560" stroke-width="2"/>
+  <text x="410" y="246" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">STORY GENERATOR</text>
+  <text x="410" y="265" text-anchor="middle" fill="#ccc" font-size="11">(GPT-3.5-turbo · category-tailored prompt)</text>
+
+  <!-- arrow: generator → judge -->
+  <line x1="410" y1="280" x2="410" y2="335" stroke="#7ec8e3" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="420" y="310" fill="#ccc" font-size="11">draft story</text>
+
+  <!-- ── LLM JUDGE ── -->
+  <rect x="270" y="335" width="280" height="65" rx="10" fill="#533483" stroke="#e94560" stroke-width="2" filter="url(#glow)"/>
+  <text x="410" y="360" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">LLM JUDGE</text>
+  <text x="410" y="378" text-anchor="middle" fill="#ccc" font-size="11">scores 5 criteria · suggests improvements</text>
+  <text x="410" y="393" text-anchor="middle" fill="#ccc" font-size="11">(GPT-3.5-turbo · low temperature)</text>
+
+  <!-- arrow: judge → decision diamond -->
+  <line x1="410" y1="400" x2="410" y2="448" stroke="#7ec8e3" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="420" y="427" fill="#ccc" font-size="11">avg score</text>
+
+  <!-- ── DECISION DIAMOND ── -->
+  <polygon points="410,448  490,488  410,528  330,488" fill="#16213e" stroke="#7ec8e3" stroke-width="2"/>
+  <text x="410" y="486" text-anchor="middle" fill="#a8d8ea" font-size="12" font-weight="bold">score ≥ 4.0?</text>
+  <text x="410" y="500" text-anchor="middle" fill="#aaa" font-size="10">or max 2 revisions?</text>
+
+  <!-- YES arrow → output -->
+  <line x1="490" y1="488" x2="620" y2="488" stroke="#7ec8e3" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="535" y="480" fill="#ccc" font-size="11">YES</text>
+  <rect x="620" y="462" width="140" height="52" rx="10" fill="#16213e" stroke="#7ec8e3" stroke-width="2" filter="url(#glow)"/>
+  <text x="690" y="484" text-anchor="middle" fill="#a8d8ea" font-size="13" font-weight="bold">OUTPUT</text>
+  <text x="690" y="500" text-anchor="middle" fill="#ccc" font-size="11">Final Story → User</text>
+
+  <!-- NO arrow → reviser -->
+  <line x1="330" y1="488" x2="155" y2="488" stroke="#e94560" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="225" y="480" fill="#ccc" font-size="11">NO</text>
+  <rect x="30" y="335" width="200" height="60" rx="10" fill="#0f3460" stroke="#e94560" stroke-width="2"/>
+  <text x="130" y="360" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">STORY REVISER</text>
+  <text x="130" y="378" text-anchor="middle" fill="#ccc" font-size="11">rewrites draft using judge's</text>
+  <text x="130" y="393" text-anchor="middle" fill="#ccc" font-size="11">suggestions</text>
+
+  <!-- arrow: reviser → judge (loop back) -->
+  <line x1="155" y1="488" x2="130" y2="488" stroke="#e94560" stroke-width="1.5"/>
+  <line x1="130" y1="488" x2="130" y2="395" stroke="#e94560" stroke-width="1.5"/>
+  <line x1="130" y1="335" x2="130" y2="308" stroke="#e94560" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="130" y1="308" x2="410" y2="308" stroke="#e94560" stroke-width="1.5"/>
+  <line x1="410" y1="308" x2="410" y2="335" stroke="#e94560" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="60" y="305" fill="#e94560" font-size="11">revised story (loop)</text>
+
+  <!-- Legend -->
+  <rect x="590" y="30" width="210" height="90" rx="8" fill="#0a0a1a" stroke="#555" stroke-width="1"/>
+  <text x="695" y="50" text-anchor="middle" fill="#aaa" font-size="12" font-weight="bold">Legend</text>
+  <rect x="605" y="60" width="16" height="12" rx="3" fill="#0f3460" stroke="#e94560" stroke-width="1.5"/>
+  <text x="628" y="71" fill="#ccc" font-size="11">LLM call (GPT-3.5-turbo)</text>
+  <rect x="605" y="80" width="16" height="12" rx="3" fill="#533483" stroke="#e94560" stroke-width="1.5"/>
+  <text x="628" y="91" fill="#ccc" font-size="11">LLM Judge (scorer)</text>
+  <line x1="605" y1="108" x2="621" y2="108" stroke="#e94560" stroke-width="2"/>
+  <text x="628" y="112" fill="#ccc" font-size="11">revision loop (≤2 turns)</text>
+</svg>
+</body>
+</html>
