@@ -13,9 +13,7 @@ without any CLI knowledge.
 """
 
 
-# ─────────────────────────────────────────────
 # Core LLM wrapper (model unchanged per spec)
-# ─────────────────────────────────────────────
 
 def call_model(prompt: str, max_tokens: int = 3000, temperature: float = 0.7) -> str:
     openai.api_key = os.getenv("OPENAI_API_KEY")  # please use your own openai api key here.
@@ -29,9 +27,7 @@ def call_model(prompt: str, max_tokens: int = 3000, temperature: float = 0.7) ->
     return resp.choices[0].message["content"]  # type: ignore
 
 
-# ─────────────────────────────────────────────
 # Step 1: Categorise the request
-# ─────────────────────────────────────────────
 
 CATEGORISE_PROMPT = """\
 You are a children's story librarian. A child has asked for a bedtime story.
@@ -55,9 +51,7 @@ def categorise(request: str) -> str:
     return category if category in valid else "ADVENTURE"
 
 
-# ─────────────────────────────────────────────
 # Step 2: Generate a first-draft story
-# ─────────────────────────────────────────────
 
 STORY_SYSTEM = {
     "ADVENTURE":  "Use a classic three-act arc: a call to adventure, a challenge overcome through courage, and a triumphant return home.",
@@ -93,9 +87,7 @@ def generate_story(request: str, category: str) -> str:
     return call_model(prompt, max_tokens=700, temperature=0.85)
 
 
-# ─────────────────────────────────────────────
 # Step 3: LLM Judge — score and critique
-# ─────────────────────────────────────────────
 
 JUDGE_PROMPT = """\
 You are a strict but fair children's literature editor. Your job is to evaluate a bedtime story
@@ -158,9 +150,7 @@ def average_score(scores: dict) -> float:
     return sum(scores.values()) / len(scores)
 
 
-# ─────────────────────────────────────────────
 # Step 4: Revise the story using judge feedback
-# ─────────────────────────────────────────────
 
 REVISION_PROMPT = """\
 You are a children's story author revising your own work based on an editor's feedback.
@@ -183,9 +173,7 @@ def revise_story(story: str, suggestions: list[str]) -> str:
     return call_model(prompt, max_tokens=700, temperature=0.75)
 
 
-# ─────────────────────────────────────────────
 # Orchestrator
-# ─────────────────────────────────────────────
 
 SCORE_THRESHOLD = 4.0   # Accept the story if avg judge score >= this
 MAX_REVISIONS   = 2     # Never loop more than this many revision cycles
@@ -224,9 +212,7 @@ def run_pipeline(request: str, verbose: bool = True) -> str:
     return story
 
 
-# ─────────────────────────────────────────────
 # Entry point
-# ─────────────────────────────────────────────
 
 example_requests = "A story about a girl named Alice and her best friend Bob, who happens to be a cat."
 
